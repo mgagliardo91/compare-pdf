@@ -1,0 +1,256 @@
+{
+  "pdf_a_path": "example/recipe1.pdf",
+  "pdf_b_path": "example/recipe2.pdf",
+  "total_pages_a": 1,
+  "total_pages_b": 1,
+  "total_differences": 5,
+  "diff_items": [
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Vanilla e",
+      "text_b": "Chocolate",
+      "bounding_boxes_a": [
+        {
+          "x": 298,
+          "y": 560,
+          "width": 426,
+          "height": 116
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 306,
+          "y": 560,
+          "width": 604,
+          "height": 114
+        }
+      ],
+      "unified_diff": "--- page_1_line_4\n+++ page_1_line_4\n@@ -1 +1 @@\n-Vanilla e\n\n+Chocolate\n",
+      "char_diffs": [
+        {
+          "operation": "replace",
+          "text_a": "Vanil",
+          "text_b": "Choco",
+          "start_a": 0,
+          "end_a": 5,
+          "start_b": 0,
+          "end_b": 5
+        },
+        {
+          "operation": "equal",
+          "text_a": "la",
+          "text_b": "la",
+          "start_a": 5,
+          "end_a": 7,
+          "start_b": 5,
+          "end_b": 7
+        },
+        {
+          "operation": "replace",
+          "text_a": " ",
+          "text_b": "t",
+          "start_a": 7,
+          "end_a": 8,
+          "start_b": 7,
+          "end_b": 8
+        },
+        {
+          "operation": "equal",
+          "text_a": "e",
+          "text_b": "e",
+          "start_a": 8,
+          "end_a": 9,
+          "start_b": 8,
+          "end_b": 9
+        }
+      ]
+    },
+    {
+      "operation": "delete",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "ad nostrud Ut enim minim veniam, quis ullamco laboris aliquip exercitation nisi ut commodo consequat. ex ea",
+      "text_b": null,
+      "bounding_boxes_a": [
+        {
+          "x": 1429,
+          "y": 1353,
+          "width": 762,
+          "height": 42
+        },
+        {
+          "x": 1427,
+          "y": 1416,
+          "width": 819,
+          "height": 42
+        },
+        {
+          "x": 1537,
+          "y": 1478,
+          "width": 421,
+          "height": 42
+        },
+        {
+          "x": 1427,
+          "y": 1488,
+          "width": 96,
+          "height": 24
+        }
+      ],
+      "bounding_boxes_b": []
+    },
+    {
+      "operation": "delete",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Ready 20 minutes in 8 people Serves",
+      "text_b": null,
+      "bounding_boxes_a": [
+        {
+          "x": 304,
+          "y": 2294,
+          "width": 402,
+          "height": 42
+        },
+        {
+          "x": 302,
+          "y": 2381,
+          "width": 313,
+          "height": 42
+        }
+      ],
+      "bounding_boxes_b": []
+    },
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "280 calories",
+      "text_b": "Ready 20 minutes in",
+      "bounding_boxes_a": [
+        {
+          "x": 302,
+          "y": 2469,
+          "width": 245,
+          "height": 35
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 304,
+          "y": 2294,
+          "width": 402,
+          "height": 42
+        }
+      ],
+      "unified_diff": "--- page_1_line_38\n+++ page_1_line_32\n@@ -1 +1 @@\n-280 calories\n\n+Ready 20 minutes in\n",
+      "char_diffs": [
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": "Ready ",
+          "start_a": 0,
+          "end_a": 0,
+          "start_b": 0,
+          "end_b": 6
+        },
+        {
+          "operation": "equal",
+          "text_a": "2",
+          "text_b": "2",
+          "start_a": 0,
+          "end_a": 1,
+          "start_b": 6,
+          "end_b": 7
+        },
+        {
+          "operation": "delete",
+          "text_a": "8",
+          "text_b": null,
+          "start_a": 1,
+          "end_a": 2,
+          "start_b": 7,
+          "end_b": 7
+        },
+        {
+          "operation": "equal",
+          "text_a": "0 ",
+          "text_b": "0 ",
+          "start_a": 2,
+          "end_a": 4,
+          "start_b": 7,
+          "end_b": 9
+        },
+        {
+          "operation": "replace",
+          "text_a": "calor",
+          "text_b": "m",
+          "start_a": 4,
+          "end_a": 9,
+          "start_b": 9,
+          "end_b": 10
+        },
+        {
+          "operation": "equal",
+          "text_a": "i",
+          "text_b": "i",
+          "start_a": 9,
+          "end_a": 10,
+          "start_b": 10,
+          "end_b": 11
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": "nut",
+          "start_a": 10,
+          "end_a": 10,
+          "start_b": 11,
+          "end_b": 14
+        },
+        {
+          "operation": "equal",
+          "text_a": "es",
+          "text_b": "es",
+          "start_a": 10,
+          "end_a": 12,
+          "start_b": 14,
+          "end_b": 16
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": " in",
+          "start_a": 12,
+          "end_a": 12,
+          "start_b": 16,
+          "end_b": 19
+        }
+      ]
+    },
+    {
+      "operation": "insert",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": null,
+      "text_b": "12 people Serves 340 calories",
+      "bounding_boxes_a": [],
+      "bounding_boxes_b": [
+        {
+          "x": 302,
+          "y": 2381,
+          "width": 339,
+          "height": 42
+        },
+        {
+          "x": 302,
+          "y": 2469,
+          "width": 245,
+          "height": 35
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,440 @@
+{
+  "pdf_a_path": "/Users/Michael/projects/compare-pdf/example/recipe1_2page.pdf",
+  "pdf_b_path": "/Users/Michael/projects/compare-pdf/example/recipe2_2page.pdf",
+  "total_pages_a": 2,
+  "total_pages_b": 2,
+  "total_differences": 7,
+  "diff_items": [
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Vanilla",
+      "text_b": "Chocolate",
+      "bounding_boxes_a": [
+        {
+          "x": 298,
+          "y": 560,
+          "width": 426,
+          "height": 116
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 306,
+          "y": 560,
+          "width": 604,
+          "height": 114
+        }
+      ],
+      "unified_diff": "--- page_1_line_2\n+++ page_1_line_2\n@@ -1 +1 @@\n-Vanilla\n\n+Chocolate\n",
+      "char_diffs": [
+        {
+          "operation": "replace",
+          "text_a": "Vanil",
+          "text_b": "Choco",
+          "start_a": 0,
+          "end_a": 5,
+          "start_b": 0,
+          "end_b": 5
+        },
+        {
+          "operation": "equal",
+          "text_a": "la",
+          "text_b": "la",
+          "start_a": 5,
+          "end_a": 7,
+          "start_b": 5,
+          "end_b": 7
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": "te",
+          "start_a": 7,
+          "end_a": 7,
+          "start_b": 7,
+          "end_b": 9
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Ready in 20 minutes\nServes 8 people",
+      "text_b": "Ready in 30 minutes\nServes 12 people",
+      "bounding_boxes_a": [
+        {
+          "x": 304,
+          "y": 2294,
+          "width": 402,
+          "height": 42
+        },
+        {
+          "x": 302,
+          "y": 2381,
+          "width": 313,
+          "height": 42
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 304,
+          "y": 2294,
+          "width": 402,
+          "height": 42
+        },
+        {
+          "x": 302,
+          "y": 2381,
+          "width": 339,
+          "height": 42
+        }
+      ],
+      "unified_diff": "--- page_1\n+++ page_1\n@@ -1,2 +1,2 @@\n-Ready in 20 minutes\n\n-Serves 8 people\n\n+Ready in 30 minutes\n\n+Serves 12 people\n",
+      "char_diffs": [
+        {
+          "operation": "equal",
+          "text_a": "Ready in ",
+          "text_b": "Ready in ",
+          "start_a": 0,
+          "end_a": 9,
+          "start_b": 0,
+          "end_b": 9
+        },
+        {
+          "operation": "replace",
+          "text_a": "2",
+          "text_b": "3",
+          "start_a": 9,
+          "end_a": 10,
+          "start_b": 9,
+          "end_b": 10
+        },
+        {
+          "operation": "equal",
+          "text_a": "0 minutes\nServes ",
+          "text_b": "0 minutes\nServes ",
+          "start_a": 10,
+          "end_a": 27,
+          "start_b": 10,
+          "end_b": 27
+        },
+        {
+          "operation": "replace",
+          "text_a": "8",
+          "text_b": "12",
+          "start_a": 27,
+          "end_a": 28,
+          "start_b": 27,
+          "end_b": 29
+        },
+        {
+          "operation": "equal",
+          "text_a": " people",
+          "text_b": " people",
+          "start_a": 28,
+          "end_a": 35,
+          "start_b": 29,
+          "end_b": 36
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Consectetuer adipiscing elit",
+      "text_b": "Consectetuer adipiscing elit is alot",
+      "bounding_boxes_a": [
+        {
+          "x": 1427,
+          "y": 619,
+          "width": 552,
+          "height": 42
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 1427,
+          "y": 619,
+          "width": 678,
+          "height": 42
+        }
+      ],
+      "unified_diff": "--- page_1_line_9\n+++ page_1_line_9\n@@ -1 +1 @@\n-Consectetuer adipiscing elit\n\n+Consectetuer adipiscing elit is alot\n",
+      "char_diffs": [
+        {
+          "operation": "equal",
+          "text_a": "Consectetuer adipiscing elit",
+          "text_b": "Consectetuer adipiscing elit",
+          "start_a": 0,
+          "end_a": 28,
+          "start_b": 0,
+          "end_b": 28
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": " is alot",
+          "start_a": 28,
+          "end_a": 28,
+          "start_b": 28,
+          "end_b": 36
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Tips",
+      "text_b": "Tips / Other Items",
+      "bounding_boxes_a": [
+        {
+          "x": 1352,
+          "y": 2555,
+          "width": 131,
+          "height": 64
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 1352,
+          "y": 2555,
+          "width": 555,
+          "height": 64
+        }
+      ],
+      "unified_diff": "--- page_1_line_33\n+++ page_1_line_33\n@@ -1 +1 @@\n-Tips\n\n+Tips / Other Items\n",
+      "char_diffs": [
+        {
+          "operation": "equal",
+          "text_a": "Tips",
+          "text_b": "Tips",
+          "start_a": 0,
+          "end_a": 4,
+          "start_b": 0,
+          "end_b": 4
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": " / Other Items",
+          "start_a": 4,
+          "end_a": 4,
+          "start_b": 4,
+          "end_b": 18
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "adipiscing elit sed do tempor incididunt ut\nlabore et dolore magna aliqua.",
+      "text_b": "adipiscing elit sed do tempor y mano\nincididunt ut labore et dolore magna aliqua.",
+      "bounding_boxes_a": [
+        {
+          "x": 1352,
+          "y": 2722,
+          "width": 826,
+          "height": 42
+        },
+        {
+          "x": 1354,
+          "y": 2784,
+          "width": 593,
+          "height": 42
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 1352,
+          "y": 2722,
+          "width": 717,
+          "height": 42
+        },
+        {
+          "x": 1353,
+          "y": 2784,
+          "width": 855,
+          "height": 42
+        }
+      ],
+      "unified_diff": "--- page_1\n+++ page_1\n@@ -1,2 +1,2 @@\n-adipiscing elit sed do tempor incididunt ut\n\n-labore et dolore magna aliqua.\n\n+adipiscing elit sed do tempor y mano\n\n+incididunt ut labore et dolore magna aliqua.\n",
+      "char_diffs": [
+        {
+          "operation": "equal",
+          "text_a": "adipiscing elit sed do tempor ",
+          "text_b": "adipiscing elit sed do tempor ",
+          "start_a": 0,
+          "end_a": 30,
+          "start_b": 0,
+          "end_b": 30
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": "y mano\n",
+          "start_a": 30,
+          "end_a": 30,
+          "start_b": 30,
+          "end_b": 37
+        },
+        {
+          "operation": "equal",
+          "text_a": "incididunt ut",
+          "text_b": "incididunt ut",
+          "start_a": 30,
+          "end_a": 43,
+          "start_b": 37,
+          "end_b": 50
+        },
+        {
+          "operation": "replace",
+          "text_a": "\n",
+          "text_b": " ",
+          "start_a": 43,
+          "end_a": 44,
+          "start_b": 50,
+          "end_b": 51
+        },
+        {
+          "operation": "equal",
+          "text_a": "labore et dolore magna aliqua.",
+          "text_b": "labore et dolore magna aliqua.",
+          "start_a": 44,
+          "end_a": 74,
+          "start_b": 51,
+          "end_b": 81
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "page_a": 2,
+      "page_b": 2,
+      "text_a": "Hello this is Tabatha!",
+      "text_b": "Hello this is Michael!",
+      "bounding_boxes_a": [
+        {
+          "x": 304,
+          "y": 310,
+          "width": 414,
+          "height": 34
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 304,
+          "y": 310,
+          "width": 409,
+          "height": 34
+        }
+      ],
+      "unified_diff": "--- page_2_line_0\n+++ page_2_line_0\n@@ -1 +1 @@\n-Hello this is Tabatha!\n\n+Hello this is Michael!\n",
+      "char_diffs": [
+        {
+          "operation": "equal",
+          "text_a": "Hello this is ",
+          "text_b": "Hello this is ",
+          "start_a": 0,
+          "end_a": 14,
+          "start_b": 0,
+          "end_b": 14
+        },
+        {
+          "operation": "replace",
+          "text_a": "Tabat",
+          "text_b": "Mic",
+          "start_a": 14,
+          "end_a": 19,
+          "start_b": 14,
+          "end_b": 17
+        },
+        {
+          "operation": "equal",
+          "text_a": "ha",
+          "text_b": "ha",
+          "start_a": 19,
+          "end_a": 21,
+          "start_b": 17,
+          "end_b": 19
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": "el",
+          "start_a": 21,
+          "end_a": 21,
+          "start_b": 19,
+          "end_b": 21
+        },
+        {
+          "operation": "equal",
+          "text_a": "!",
+          "text_b": "!",
+          "start_a": 21,
+          "end_a": 22,
+          "start_b": 21,
+          "end_b": 22
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "page_a": 2,
+      "page_b": 2,
+      "text_a": "Hello, this is Michael!",
+      "text_b": "Hello, this is not Michael!",
+      "bounding_boxes_a": [
+        {
+          "x": 773,
+          "y": 435,
+          "width": 423,
+          "height": 39
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 697,
+          "y": 435,
+          "width": 499,
+          "height": 39
+        }
+      ],
+      "unified_diff": "--- page_2_line_1\n+++ page_2_line_1\n@@ -1 +1 @@\n-Hello, this is Michael!\n\n+Hello, this is not Michael!\n",
+      "char_diffs": [
+        {
+          "operation": "equal",
+          "text_a": "Hello, this is ",
+          "text_b": "Hello, this is ",
+          "start_a": 0,
+          "end_a": 15,
+          "start_b": 0,
+          "end_b": 15
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": "not ",
+          "start_a": 15,
+          "end_a": 15,
+          "start_b": 15,
+          "end_b": 19
+        },
+        {
+          "operation": "equal",
+          "text_a": "Michael!",
+          "text_b": "Michael!",
+          "start_a": 15,
+          "end_a": 23,
+          "start_b": 19,
+          "end_b": 27
+        }
+      ]
+    }
+  ]
+}

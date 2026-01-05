@@ -1,0 +1,173 @@
+{
+  "pdf_a_path": "/Users/Michael/projects/compare-pdf/example/recipe1.pdf",
+  "pdf_b_path": "/Users/Michael/projects/compare-pdf/example/recipe2.pdf",
+  "total_pages_a": 1,
+  "total_pages_b": 1,
+  "total_differences": 3,
+  "diff_items": [
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Vanilla",
+      "text_b": "Chocolate",
+      "bounding_boxes_a": [
+        {
+          "x": 298,
+          "y": 560,
+          "width": 426,
+          "height": 116
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 306,
+          "y": 560,
+          "width": 604,
+          "height": 114
+        }
+      ],
+      "unified_diff": "--- page_1_line_2\n+++ page_1_line_2\n@@ -1 +1 @@\n-Vanilla\n\n+Chocolate\n",
+      "char_diffs": [
+        {
+          "operation": "replace",
+          "text_a": "Vanil",
+          "text_b": "Choco",
+          "start_a": 0,
+          "end_a": 5,
+          "start_b": 0,
+          "end_b": 5
+        },
+        {
+          "operation": "equal",
+          "text_a": "la",
+          "text_b": "la",
+          "start_a": 5,
+          "end_a": 7,
+          "start_b": 5,
+          "end_b": 7
+        },
+        {
+          "operation": "insert",
+          "text_a": null,
+          "text_b": "te",
+          "start_a": 7,
+          "end_a": 7,
+          "start_b": 7,
+          "end_b": 9
+        }
+      ]
+    },
+    {
+      "operation": "replace",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Serves 8 people\n280 calories",
+      "text_b": "Serves 12 people\n340 calories",
+      "bounding_boxes_a": [
+        {
+          "x": 302,
+          "y": 2381,
+          "width": 313,
+          "height": 42
+        },
+        {
+          "x": 302,
+          "y": 2469,
+          "width": 245,
+          "height": 35
+        }
+      ],
+      "bounding_boxes_b": [
+        {
+          "x": 302,
+          "y": 2381,
+          "width": 339,
+          "height": 42
+        },
+        {
+          "x": 302,
+          "y": 2469,
+          "width": 245,
+          "height": 35
+        }
+      ],
+      "unified_diff": "--- page_1\n+++ page_1\n@@ -1,2 +1,2 @@\n-Serves 8 people\n\n-280 calories\n\n+Serves 12 people\n\n+340 calories\n",
+      "char_diffs": [
+        {
+          "operation": "equal",
+          "text_a": "Serves ",
+          "text_b": "Serves ",
+          "start_a": 0,
+          "end_a": 7,
+          "start_b": 0,
+          "end_b": 7
+        },
+        {
+          "operation": "replace",
+          "text_a": "8",
+          "text_b": "12",
+          "start_a": 7,
+          "end_a": 8,
+          "start_b": 7,
+          "end_b": 9
+        },
+        {
+          "operation": "equal",
+          "text_a": " people\n",
+          "text_b": " people\n",
+          "start_a": 8,
+          "end_a": 16,
+          "start_b": 9,
+          "end_b": 17
+        },
+        {
+          "operation": "replace",
+          "text_a": "28",
+          "text_b": "34",
+          "start_a": 16,
+          "end_a": 18,
+          "start_b": 17,
+          "end_b": 19
+        },
+        {
+          "operation": "equal",
+          "text_a": "0 calories",
+          "text_b": "0 calories",
+          "start_a": 18,
+          "end_a": 28,
+          "start_b": 19,
+          "end_b": 29
+        }
+      ]
+    },
+    {
+      "operation": "delete",
+      "page_a": 1,
+      "page_b": 1,
+      "text_a": "Ut enim ad minim veniam, quis nostrud\nexercitation ullamco laboris nisi ut aliquip\nex ea commodo consequat.",
+      "text_b": null,
+      "bounding_boxes_a": [
+        {
+          "x": 1429,
+          "y": 1353,
+          "width": 762,
+          "height": 42
+        },
+        {
+          "x": 1427,
+          "y": 1416,
+          "width": 819,
+          "height": 42
+        },
+        {
+          "x": 1427,
+          "y": 1478,
+          "width": 531,
+          "height": 42
+        }
+      ],
+      "bounding_boxes_b": []
+    }
+  ]
+}
