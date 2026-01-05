@@ -50,8 +50,15 @@ const DiffList = ({ onDiffClick }: DiffListProps) => {
       // Fallback to text blocks if no char diffs
       const text = item.text_a || item.text_b || '';
       const maxLength = 60;
-      if (text.length <= maxLength) return <span>{text}</span>;
-      return <span>{text.substring(0, maxLength) + '...'}</span>;
+      const displayText = text.length <= maxLength ? text : text.substring(0, maxLength) + '...';
+      
+      // Style based on operation
+      if (item.operation === 'delete') {
+        return <span style={{ color: '#d32f2f' }}>{displayText}</span>;
+      } else if (item.operation === 'insert') {
+        return <span style={{ color: '#388e3c', fontWeight: 'bold' }}>{displayText}</span>;
+      }
+      return <span>{displayText}</span>;
     }
 
     // Find the first non-equal char diff (the actual change)
@@ -100,7 +107,7 @@ const DiffList = ({ onDiffClick }: DiffListProps) => {
       
       if (diff.operation === 'delete') {
         parts.push(
-          <span key={`diff-${i}`} style={{ color: '#d32f2f', textDecoration: 'line-through' }}>
+          <span key={`diff-${i}`} style={{ color: '#d32f2f' }}>
             {displayText}
           </span>
         );

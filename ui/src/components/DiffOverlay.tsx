@@ -18,28 +18,29 @@ const DiffOverlay = ({ pageNumber, side, renderedWidth, rasterWidth }: DiffOverl
   const [hoveredDiffIndex, setHoveredDiffIndex] = useState<number | null>(null);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const boxRefs = useRef<Map<number, HTMLElement>>(new Map());
+  const popperRef = useRef<HTMLDivElement>(null);
 
   // Coordinate cross-pane display: when activeDiffIndex changes, set anchor from refs if we have that diff
-  // This enables showing popovers on both panes for replace operations (both hover and pinned)
+  // This enables showing popovers on both panes for operations with bounding boxes on both sides
   useEffect(() => {
     if (activeDiffIndex !== null && boxRefs.current.has(activeDiffIndex)) {
       const element = boxRefs.current.get(activeDiffIndex);
       if (element) {
-        // Check if this is a replace operation by looking at the diff item
         const diffItem = diffData?.diff_items[activeDiffIndex];
-        // Show on both panes for replace operations (hover or pinned)
-        // Show on the relevant pane for delete/insert operations when pinned
-        if (diffItem?.operation === 'replace' || isPinned) {
+        // Show cross-pane if operation has bounding boxes on both sides (replace/insert with context)
+        // Or when pinned (to show delete/insert on their respective sides)
+        const hasBothSides = diffItem && diffItem.bounding_boxes_a.length > 0 && diffItem.bounding_boxes_b.length > 0;
+        if ((hasBothSides || isPinned) && anchorEl !== element) {
           setAnchorEl(element);
           setHoveredDiffIndex(activeDiffIndex);
         }
       }
-    } else if (activeDiffIndex === null) {
-      // Clear when no diff is active
+    } else if (activeDiffIndex === null && !isPinned) {
+      // Clear when no diff is active (but not when pinned)
       setAnchorEl(null);
       setHoveredDiffIndex(null);
     }
-  }, [activeDiffIndex, isPinned, diffData]);
+  }, [activeDiffIndex, isPinned, diffData, anchorEl]);
 
   // Close popovers on window resize to prevent misalignment
   useEffect(() => {
@@ -83,6 +84,7 @@ const DiffOverlay = ({ pageNumber, side, renderedWidth, rasterWidth }: DiffOverl
   const handleIconHover = (diffIndex: number, boxElement: HTMLElement) => {
     if (isPinned) return;
     
+    // Set activeDiffIndex to trigger cross-pane popovers for replace operations
     setActiveDiffIndex(diffIndex);
     setHoveredDiffIndex(diffIndex);
     setAnchorEl(boxElement);
@@ -190,6 +192,8 @@ const DiffOverlay = ({ pageNumber, side, renderedWidth, rasterWidth }: DiffOverl
         diffIndex={hoveredDiffIndex}
         onClose={handleClose}
         isPinned={isPinned}
+        side={side}
+        siblingRef={popperRef}
       />
     </>
   );

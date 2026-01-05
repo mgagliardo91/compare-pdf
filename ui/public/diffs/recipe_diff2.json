@@ -1,9 +1,9 @@
 {
-  "pdf_a_path": "/Users/Michael/projects/compare-pdf/example/recipe1_2page.pdf",
-  "pdf_b_path": "/Users/Michael/projects/compare-pdf/example/recipe2_2page.pdf",
+  "pdf_a_path": "example/recipe1_2page.pdf",
+  "pdf_b_path": "example/recipe21_2page.pdf",
   "total_pages_a": 2,
   "total_pages_b": 2,
-  "total_differences": 7,
+  "total_differences": 8,
   "diff_items": [
     {
       "operation": "replace",
@@ -390,6 +390,22 @@
           "end_b": 27
         }
       ]
+    },
+    {
+      "operation": "delete",
+      "page_a": 2,
+      "page_b": 2,
+      "text_a": "Goodbye World Another Time!",
+      "text_b": null,
+      "bounding_boxes_a": [
+        {
+          "x": 332,
+          "y": 1089,
+          "width": 832,
+          "height": 59
+        }
+      ],
+      "bounding_boxes_b": []
     }
   ]
 }

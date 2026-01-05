@@ -1,4 +1,5 @@
-import { Popover, Box, Typography, Chip, IconButton } from '@mui/material';
+import { Popper, Box, Typography, Chip, IconButton, Paper, ClickAwayListener } from '@mui/material';
+import React from 'react';
 import { useDiffStore } from '../store/diffStore';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -8,10 +9,13 @@ interface DiffPopoverProps {
   diffIndex: number | null;
   onClose: () => void;
   isPinned: boolean;
+  side?: 'a' | 'b';
+  siblingRef?: React.RefObject<HTMLDivElement>;
 }
 
-const DiffPopover = ({ open, anchorEl, diffIndex, onClose, isPinned }: DiffPopoverProps) => {
+const DiffPopover = ({ open, anchorEl, diffIndex, onClose, isPinned, side = 'a', siblingRef }: DiffPopoverProps) => {
   const { diffData } = useDiffStore();
+  const popperRef = React.useRef<HTMLDivElement>(null);
 
   if (!diffData || diffIndex === null) return null;
 
@@ -27,34 +31,50 @@ const DiffPopover = ({ open, anchorEl, diffIndex, onClose, isPinned }: DiffPopov
     return colors[op as keyof typeof colors] || 'default';
   };
 
+  const handleClickAway = (event: MouseEvent | TouchEvent) => {
+    if (!isPinned) return;
+    
+    const target = event.target as HTMLElement;
+    
+    // Check if click is inside ANY popper paper (this one or sibling)
+    const clickedInsidePopper = target.closest('[data-popper-paper="true"]');
+    if (clickedInsidePopper) {
+      return;
+    }
+    
+    // Click is outside all poppers, close them
+    onClose();
+  };
+
   return (
-    <Popover
+    <Popper
       open={open}
       anchorEl={anchorEl}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
-      }}
-      disableRestoreFocus
-      sx={{
-        pointerEvents: isPinned ? 'auto' : 'none',
-      }}
-      slotProps={{
-        paper: {
-          sx: {
-            pointerEvents: isPinned ? 'auto' : 'none',
-            maxWidth: 500,
-            p: 2,
-            mt: 1,
+      placement={side === 'a' ? 'bottom-start' : 'bottom-end'}
+      modifiers={[
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 8],
           },
         },
+      ]}
+      sx={{
+        zIndex: 1300,
       }}
     >
+      <ClickAwayListener onClickAway={handleClickAway}>
+        <Paper
+          ref={popperRef}
+          data-popper-paper="true"
+          sx={{
+            maxWidth: 500,
+            p: 2,
+            userSelect: 'text',
+            pointerEvents: 'auto',
+            boxShadow: 3,
+          }}
+        >
       <Box>
         <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
           <Chip
@@ -133,7 +153,9 @@ const DiffPopover = ({ open, anchorEl, diffIndex, onClose, isPinned }: DiffPopov
           </Box>
         )}
       </Box>
-    </Popover>
+        </Paper>
+      </ClickAwayListener>
+    </Popper>
   );
 };
 
