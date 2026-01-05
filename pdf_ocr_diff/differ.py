@@ -2,38 +2,142 @@
 
 import difflib
 from difflib import SequenceMatcher
-from typing import List, Optional
+from typing import List, Optional, Tuple
+import re
 
 from .models import PageData, DiffItem, DiffOperation, DiffResult, BoundingBox, CharDiff
 
 
+def _tokenize_text(text: str) -> List[Tuple[str, int, int]]:
+    """
+    Tokenize text into words and whitespace, preserving positions.
+    
+    Args:
+        text: Text to tokenize
+    
+    Returns:
+        List of (token, start_pos, end_pos) tuples
+    """
+    tokens = []
+    # Pattern matches words (including punctuation attached to words) or whitespace
+    pattern = r'\S+|\s+'
+    for match in re.finditer(pattern, text):
+        tokens.append((match.group(), match.start(), match.end()))
+    return tokens
+
+
 def _compute_char_diffs(text_a: str, text_b: str) -> List[CharDiff]:
     """
-    Compute character-level differences between two strings.
+    Compute word-level differences between two strings.
+    
+    Works at word boundaries rather than character level for better readability.
+    When a word changes, the entire word (including attached punctuation) is
+    included in the diff.
     
     Args:
         text_a: Original text
         text_b: Modified text
     
     Returns:
-        List of CharDiff objects showing character-level changes
+        List of CharDiff objects showing word-level changes
     """
-    matcher = SequenceMatcher(None, text_a, text_b)
+    # Tokenize both texts
+    tokens_a = _tokenize_text(text_a)
+    tokens_b = _tokenize_text(text_b)
+    
+    # Extract just the token strings for comparison
+    words_a = [token for token, _, _ in tokens_a]
+    words_b = [token for token, _, _ in tokens_b]
+    
+    # Run diff on tokens
+    matcher = SequenceMatcher(None, words_a, words_b)
     char_diffs = []
     
     for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        # Get the actual text and positions for these token ranges
+        if i1 < i2:
+            # Tokens exist in text_a
+            start_a = tokens_a[i1][1]
+            end_a = tokens_a[i2 - 1][2]
+            text_a_segment = text_a[start_a:end_a]
+        else:
+            start_a = tokens_a[i1][1] if i1 < len(tokens_a) else len(text_a)
+            end_a = start_a
+            text_a_segment = None
+        
+        if j1 < j2:
+            # Tokens exist in text_b
+            start_b = tokens_b[j1][1]
+            end_b = tokens_b[j2 - 1][2]
+            text_b_segment = text_b[start_b:end_b]
+        else:
+            start_b = tokens_b[j1][1] if j1 < len(tokens_b) else len(text_b)
+            end_b = start_b
+            text_b_segment = None
+        
         char_diff = CharDiff(
             operation=tag,
-            text_a=text_a[i1:i2] if i1 < i2 else None,
-            text_b=text_b[j1:j2] if j1 < j2 else None,
-            start_a=i1,
-            end_a=i2,
-            start_b=j1,
-            end_b=j2
+            text_a=text_a_segment,
+            text_b=text_b_segment,
+            start_a=start_a,
+            end_a=end_a,
+            start_b=start_b,
+            end_b=end_b
         )
         char_diffs.append(char_diff)
     
     return char_diffs
+
+
+def _infer_operation_from_char_diffs(char_diffs: List[CharDiff]) -> str:
+    """
+    Infer the appropriate operation type based on word-level diffs.
+    
+    If all non-equal operations are inserts, return 'insert'.
+    If all non-equal operations are deletes, return 'delete'.
+    If there's a mix or any replace operations, return 'replace'.
+    
+    Ignores whitespace-only replace operations (newline/space changes) when
+    determining the operation type, as these are typically formatting changes.
+    
+    Args:
+        char_diffs: List of CharDiff objects
+    
+    Returns:
+        Operation type: 'insert', 'delete', or 'replace'
+    """
+    has_insert = False
+    has_delete = False
+    has_replace = False
+    
+    for diff in char_diffs:
+        if diff.operation == 'equal':
+            continue
+        elif diff.operation == 'insert':
+            has_insert = True
+        elif diff.operation == 'delete':
+            has_delete = True
+        elif diff.operation == 'replace':
+            # Check if this is a whitespace-only replace (e.g., newline <-> space)
+            text_a_ws = diff.text_a and diff.text_a.strip() == ''
+            text_b_ws = diff.text_b and diff.text_b.strip() == ''
+            
+            if text_a_ws and text_b_ws:
+                # Both sides are whitespace - ignore this replace for classification
+                continue
+            else:
+                has_replace = True
+    
+    # If there's any replace operation, or both insert and delete, it's a replace
+    if has_replace or (has_insert and has_delete):
+        return 'replace'
+    elif has_insert:
+        return 'insert'
+    elif has_delete:
+        return 'delete'
+    else:
+        # All equal (shouldn't happen in practice, but default to replace)
+        return 'replace'
 
 
 def _generate_unified_diff(text_a: str, text_b: str, label_a: str = "a", label_b: str = "b") -> str:
@@ -97,7 +201,11 @@ def _find_best_match(line: str, candidates: List[str], threshold: float = 0.6) -
 
 def _group_consecutive_diffs(diff_items: List[DiffItem], max_y_gap: int = 100, max_x_gap: int = 200) -> List[DiffItem]:
     """
-    Group consecutive diff items of the same type that are spatially close.
+    Group consecutive diff items that are spatially close.
+    
+    Groups items that are vertically and horizontally close, even if they have
+    different operation types. After grouping, re-analyzes the combined word-level
+    diffs to determine the correct operation type.
     
     Args:
         diff_items: List of diff items to potentially group
@@ -117,35 +225,33 @@ def _group_consecutive_diffs(diff_items: List[DiffItem], max_y_gap: int = 100, m
     for item in diff_items[1:]:
         prev_item = current_group[-1]
         
-        # Check if items can be grouped:
-        # - Same operation type
-        # - Same page numbers
-        # - Vertically close (check last bbox of prev vs first bbox of current)
-        # - Horizontally aligned (similar x position = same column/section)
-        can_group = (item.operation == prev_item.operation and
-                    item.page_a == prev_item.page_a and
+        # Check if items can be grouped based on spatial proximity and page numbers
+        # Note: We now allow different operation types to be grouped
+        can_group = (item.page_a == prev_item.page_a and
                     item.page_b == prev_item.page_b)
         
-        if can_group and prev_item.bounding_boxes_a and item.bounding_boxes_a:
-            prev_bbox = prev_item.bounding_boxes_a[-1]
-            curr_bbox = item.bounding_boxes_a[0]
+        # Check spatial proximity
+        if can_group:
+            # Try to get bounding boxes from either side (prefer the side that has data)
+            prev_bbox = None
+            curr_bbox = None
             
-            # Check vertical distance
-            if abs(curr_bbox.y - prev_bbox.y) > max_y_gap:
-                can_group = False
-            # Check horizontal alignment (are they in the same column?)
-            elif abs(curr_bbox.x - prev_bbox.x) > max_x_gap:
-                can_group = False
-                
-        elif can_group and prev_item.bounding_boxes_b and item.bounding_boxes_b:
-            prev_bbox = prev_item.bounding_boxes_b[-1]
-            curr_bbox = item.bounding_boxes_b[0]
+            if prev_item.bounding_boxes_a and item.bounding_boxes_a:
+                prev_bbox = prev_item.bounding_boxes_a[-1]
+                curr_bbox = item.bounding_boxes_a[0]
+            elif prev_item.bounding_boxes_b and item.bounding_boxes_b:
+                prev_bbox = prev_item.bounding_boxes_b[-1]
+                curr_bbox = item.bounding_boxes_b[0]
             
-            # Check vertical distance
-            if abs(curr_bbox.y - prev_bbox.y) > max_y_gap:
-                can_group = False
-            # Check horizontal alignment (are they in the same column?)
-            elif abs(curr_bbox.x - prev_bbox.x) > max_x_gap:
+            if prev_bbox and curr_bbox:
+                # Check vertical distance
+                if abs(curr_bbox.y - prev_bbox.y) > max_y_gap:
+                    can_group = False
+                # Check horizontal alignment (are they in the same column?)
+                elif abs(curr_bbox.x - prev_bbox.x) > max_x_gap:
+                    can_group = False
+            else:
+                # Can't determine spatial relationship, don't group
                 can_group = False
         
         if can_group:
@@ -153,7 +259,7 @@ def _group_consecutive_diffs(diff_items: List[DiffItem], max_y_gap: int = 100, m
         else:
             # Flush current group
             if len(current_group) > 1:
-                # Merge group into single item
+                # Merge group into single item with re-analyzed operation
                 grouped.append(_merge_diff_items(current_group))
             else:
                 grouped.append(current_group[0])
@@ -172,11 +278,15 @@ def _merge_diff_items(items: List[DiffItem]) -> DiffItem:
     """
     Merge multiple diff items into a single item.
     
+    Re-analyzes the combined text to determine the correct operation type
+    based on word-level diffs. This handles cases where text reflow causes
+    separate line changes that are actually part of a single logical change.
+    
     Args:
-        items: List of diff items to merge (must all have same operation)
+        items: List of diff items to merge
     
     Returns:
-        Single merged DiffItem
+        Single merged DiffItem with re-analyzed operation type
     """
     texts_a = [item.text_a for item in items if item.text_a]
     texts_b = [item.text_b for item in items if item.text_b]
@@ -187,9 +297,11 @@ def _merge_diff_items(items: List[DiffItem]) -> DiffItem:
     merged_text_a = '\n'.join(texts_a) if texts_a else None
     merged_text_b = '\n'.join(texts_b) if texts_b else None
     
-    # Generate unified diff and char diffs for merged text if it's a replace
+    # Generate unified diff and char diffs for merged text
     unified_diff = None
     char_diffs = []
+    operation = items[0].operation  # Default to first item's operation
+    
     if merged_text_a and merged_text_b:
         unified_diff = _generate_unified_diff(
             merged_text_a, merged_text_b,
@@ -197,9 +309,19 @@ def _merge_diff_items(items: List[DiffItem]) -> DiffItem:
             f"page_{items[0].page_b}"
         )
         char_diffs = _compute_char_diffs(merged_text_a, merged_text_b)
+        
+        # Re-infer operation type from combined word-level diffs
+        inferred_op = _infer_operation_from_char_diffs(char_diffs)
+        operation = getattr(DiffOperation, inferred_op.upper())
+    elif merged_text_a and not merged_text_b:
+        # Only text_a exists - this is a delete
+        operation = DiffOperation.DELETE
+    elif not merged_text_a and merged_text_b:
+        # Only text_b exists - this is an insert
+        operation = DiffOperation.INSERT
     
     return DiffItem(
-        operation=items[0].operation,
+        operation=operation,
         page_a=items[0].page_a,
         page_b=items[0].page_b,
         text_a=merged_text_a,
@@ -312,11 +434,15 @@ def compare_pages(page_a: Optional[PageData], page_b: Optional[PageData]) -> Lis
                     f"page_{page_b.page_number}_line_{j}"
                 )
                 
-                # Compute character-level diffs
+                # Compute word-level diffs
                 char_diffs = _compute_char_diffs(lines_a[i], lines_b[j])
                 
+                # Infer the actual operation type from word-level diffs
+                inferred_op = _infer_operation_from_char_diffs(char_diffs)
+                operation = getattr(DiffOperation, inferred_op.upper())
+                
                 diff_items.append(DiffItem(
-                    operation=DiffOperation.REPLACE,
+                    operation=operation,
                     page_a=page_a.page_number,
                     page_b=page_b.page_number,
                     text_a=lines_a[i],

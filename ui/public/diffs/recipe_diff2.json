@@ -31,29 +31,11 @@
       "char_diffs": [
         {
           "operation": "replace",
-          "text_a": "Vanil",
-          "text_b": "Choco",
+          "text_a": "Vanilla",
+          "text_b": "Chocolate",
           "start_a": 0,
-          "end_a": 5,
+          "end_a": 7,
           "start_b": 0,
-          "end_b": 5
-        },
-        {
-          "operation": "equal",
-          "text_a": "la",
-          "text_b": "la",
-          "start_a": 5,
-          "end_a": 7,
-          "start_b": 5,
-          "end_b": 7
-        },
-        {
-          "operation": "insert",
-          "text_a": null,
-          "text_b": "te",
-          "start_a": 7,
-          "end_a": 7,
-          "start_b": 7,
           "end_b": 9
         }
       ]
@@ -105,20 +87,20 @@
         },
         {
           "operation": "replace",
-          "text_a": "2",
-          "text_b": "3",
+          "text_a": "20",
+          "text_b": "30",
           "start_a": 9,
-          "end_a": 10,
+          "end_a": 11,
           "start_b": 9,
-          "end_b": 10
+          "end_b": 11
         },
         {
           "operation": "equal",
-          "text_a": "0 minutes\nServes ",
-          "text_b": "0 minutes\nServes ",
-          "start_a": 10,
+          "text_a": " minutes\nServes ",
+          "text_b": " minutes\nServes ",
+          "start_a": 11,
           "end_a": 27,
-          "start_b": 10,
+          "start_b": 11,
           "end_b": 27
         },
         {
@@ -142,7 +124,7 @@
       ]
     },
     {
-      "operation": "replace",
+      "operation": "insert",
       "page_a": 1,
       "page_b": 1,
       "text_a": "Consectetuer adipiscing elit",
@@ -186,7 +168,7 @@
       ]
     },
     {
-      "operation": "replace",
+      "operation": "insert",
       "page_a": 1,
       "page_b": 1,
       "text_a": "Tips",
@@ -230,7 +212,7 @@
       ]
     },
     {
-      "operation": "replace",
+      "operation": "insert",
       "page_a": 1,
       "page_b": 1,
       "text_a": "adipiscing elit sed do tempor incididunt ut\nlabore et dolore magna aliqua.",
@@ -347,44 +329,17 @@
         },
         {
           "operation": "replace",
-          "text_a": "Tabat",
-          "text_b": "Mic",
+          "text_a": "Tabatha!",
+          "text_b": "Michael!",
           "start_a": 14,
-          "end_a": 19,
-          "start_b": 14,
-          "end_b": 17
-        },
-        {
-          "operation": "equal",
-          "text_a": "ha",
-          "text_b": "ha",
-          "start_a": 19,
-          "end_a": 21,
-          "start_b": 17,
-          "end_b": 19
-        },
-        {
-          "operation": "insert",
-          "text_a": null,
-          "text_b": "el",
-          "start_a": 21,
-          "end_a": 21,
-          "start_b": 19,
-          "end_b": 21
-        },
-        {
-          "operation": "equal",
-          "text_a": "!",
-          "text_b": "!",
-          "start_a": 21,
           "end_a": 22,
-          "start_b": 21,
+          "start_b": 14,
           "end_b": 22
         }
       ]
     },
     {
-      "operation": "replace",
+      "operation": "insert",
       "page_a": 2,
       "page_b": 2,
       "text_a": "Hello, this is Michael!",

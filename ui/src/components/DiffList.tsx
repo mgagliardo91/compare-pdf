@@ -55,21 +55,23 @@ const DiffList = ({ onDiffClick }: DiffListProps) => {
 
     const parts: JSX.Element[] = [];
     
-    // Add context before
-    let beforeText = '';
-    let beforeLength = 0;
-    for (let i = Math.max(0, changeIndex - 1); i >= 0 && beforeLength < contextBefore; i--) {
-      const diff = item.char_diffs[i];
-      const text = diff.text_a || diff.text_b || '';
-      if (beforeLength + text.length <= contextBefore) {
-        beforeText = text + beforeText;
-        beforeLength += text.length;
-      } else {
-        beforeText = '...' + text.substring(text.length - (contextBefore - beforeLength)) + beforeText;
-        break;
+    // Add context before (only if there are items before the change)
+    if (changeIndex > 0) {
+      let beforeText = '';
+      let beforeLength = 0;
+      for (let i = changeIndex - 1; i >= 0 && beforeLength < contextBefore; i--) {
+        const diff = item.char_diffs[i];
+        const text = diff.text_a || diff.text_b || '';
+        if (beforeLength + text.length <= contextBefore) {
+          beforeText = text + beforeText;
+          beforeLength += text.length;
+        } else {
+          beforeText = '...' + text.substring(text.length - (contextBefore - beforeLength)) + beforeText;
+          break;
+        }
       }
+      if (beforeText) parts.push(<span key="before">{beforeText}</span>);
     }
-    if (beforeText) parts.push(<span key="before">{beforeText}</span>);
 
     // Add the changes with highlighting
     let afterLength = 0;
