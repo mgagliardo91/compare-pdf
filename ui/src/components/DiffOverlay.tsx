@@ -1,6 +1,8 @@
-import { Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 import { useDiffStore } from '../store/diffStore';
 import { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import DiffPopover from './DiffPopover';
 
 interface DiffOverlayProps {
@@ -39,6 +41,18 @@ const DiffOverlay = ({ pageNumber, side, renderedWidth, rasterWidth }: DiffOverl
     }
   }, [activeDiffIndex, isPinned, diffData]);
 
+  // Close popovers on window resize to prevent misalignment
+  useEffect(() => {
+    const handleResize = () => {
+      if (isPinned) {
+        handleClose();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isPinned]);
+
   if (!diffData) return null;
 
   // Calculate scale factor for coordinate transformation
@@ -66,50 +80,35 @@ const DiffOverlay = ({ pageNumber, side, renderedWidth, rasterWidth }: DiffOverl
     return colors[operation as keyof typeof colors] || '#999';
   };
 
-  const handleMouseEnter = (event: React.MouseEvent<HTMLDivElement>, diffIndex: number) => {
-    // Don't change anything if popover is pinned
+  const handleIconHover = (diffIndex: number, boxElement: HTMLElement) => {
     if (isPinned) return;
     
-    // Clear any existing timeout
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-    }
-    
-    setActiveDiffIndex(diffIndex);
-    setAnchorEl(event.currentTarget);
-    
-    // Delay popover appearance very slightly to prevent flicker
-    const timeout = setTimeout(() => {
-      setHoveredDiffIndex(diffIndex);
-    }, 100);
-    
-    setHoverTimeout(timeout);
-  };
-
-  const handleMouseLeave = () => {
-    // Don't hide if popover is pinned
-    if (isPinned) return;
-    
-    // Clear timeout if mouse leaves before popover shows
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-      setHoverTimeout(null);
-    }
-    
-    // Delay hiding to allow moving between box and popover
-    setTimeout(() => {
-      setActiveDiffIndex(null);
-      setHoveredDiffIndex(null);
-      setAnchorEl(null);
-    }, 100);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>, diffIndex: number) => {
-    // Pin the popover on click (global state so both panes show popovers)
-    setIsPinned(true);
     setActiveDiffIndex(diffIndex);
     setHoveredDiffIndex(diffIndex);
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(boxElement);
+  };
+
+  const handleIconLeave = () => {
+    if (isPinned) return;
+    
+    setActiveDiffIndex(null);
+    setHoveredDiffIndex(null);
+    setAnchorEl(null);
+  };
+
+  const handleIconClick = (event: React.MouseEvent<HTMLButtonElement>, diffIndex: number, boxElement: HTMLElement) => {
+    event.stopPropagation();
+    
+    if (isPinned && activeDiffIndex === diffIndex) {
+      // If already pinned on this diff, unpin
+      handleClose();
+    } else {
+      // Pin this diff
+      setIsPinned(true);
+      setActiveDiffIndex(diffIndex);
+      setHoveredDiffIndex(diffIndex);
+      setAnchorEl(boxElement);
+    }
   };
 
   const handleClose = () => {
@@ -133,32 +132,54 @@ const DiffOverlay = ({ pageNumber, side, renderedWidth, rasterWidth }: DiffOverl
           const height = bbox.height * scaleFactor;
 
           return (
-            <Box
-              key={`diff_${index}_bbox_${bboxIndex}`}
-              ref={(el) => {
-                if (el && bboxIndex === 0) {
-                  // Store reference to first bbox of each diff item
-                  boxRefs.current.set(index, el);
-                }
-              }}
-              onMouseEnter={(e) => handleMouseEnter(e, index)}
-              onMouseLeave={handleMouseLeave}
-              onClick={(e) => handleClick(e, index)}
-              sx={{
-                position: 'absolute',
-                left: x,
-                top: y,
-                width,
-                height,
-                border: 2,
-                borderColor: getColor(item.operation, isActive),
-                backgroundColor: isActive ? `${getColor(item.operation, true)}20` : 'transparent',
-                pointerEvents: 'auto',
-                cursor: 'pointer',
-                zIndex: isActive ? 10 : 1,
-                transition: 'all 0.2s',
-              }}
-            />
+            <React.Fragment key={`diff_${index}_bbox_${bboxIndex}`}>
+              <Box
+                ref={(el) => {
+                  if (el && bboxIndex === 0) {
+                    // Store reference to first bbox of each diff item
+                    boxRefs.current.set(index, el);
+                  }
+                }}
+                sx={{
+                  position: 'absolute',
+                  left: x,
+                  top: y,
+                  width,
+                  height,
+                  border: 2,
+                  borderColor: getColor(item.operation, isActive),
+                  backgroundColor: isActive ? `${getColor(item.operation, true)}20` : 'transparent',
+                  pointerEvents: 'none',
+                  zIndex: isActive ? 10 : 1,
+                  transition: 'all 0.2s',
+                }}
+              />
+              {bboxIndex === 0 && (
+                <IconButton
+                  size="small"
+                  onMouseEnter={() => {
+                    const boxEl = boxRefs.current.get(index);
+                    if (boxEl) handleIconHover(index, boxEl);
+                  }}
+                  onMouseLeave={handleIconLeave}
+                  onClick={(e) => {
+                    const boxEl = boxRefs.current.get(index);
+                    if (boxEl) handleIconClick(e, index, boxEl);
+                  }}
+                  sx={{
+                    position: 'absolute',
+                    left: x + width + 4,
+                    top: y + (height / 2) - 12,
+                    width: 20,
+                    height: 20,
+                    padding: 0,
+                    zIndex: isActive ? 11 : 2,
+                  }}
+                >
+                  <InfoIcon sx={{ fontSize: 20, color: getColor(item.operation, isActive) }} />
+                </IconButton>
+              )}
+            </React.Fragment>
           );
         });
       })}

@@ -1,6 +1,9 @@
-import { Box, List, ListItem, ListItemButton, ListItemText, Typography, Chip } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemText, Typography, Chip, TextField, InputAdornment, IconButton } from '@mui/material';
 import PushPinIcon from '@mui/icons-material/PushPin';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import { useDiffStore } from '../store/diffStore';
+import { useState } from 'react';
 import type { DiffItem } from '../types/diff';
 
 interface DiffListProps {
@@ -9,8 +12,21 @@ interface DiffListProps {
 
 const DiffList = ({ onDiffClick }: DiffListProps) => {
   const { diffData, activeDiffIndex, isPinned } = useDiffStore();
+  const [searchQuery, setSearchQuery] = useState('');
 
   if (!diffData) return null;
+
+  // Filter diffs based on search query
+  const filteredDiffs = searchQuery.trim() === ''
+    ? diffData.diff_items.map((item, index) => ({ item, index }))
+    : diffData.diff_items
+        .map((item, index) => ({ item, index }))
+        .filter(({ item }) => {
+          const query = searchQuery.toLowerCase();
+          const textA = (item.text_a || '').toLowerCase();
+          const textB = (item.text_b || '').toLowerCase();
+          return textA.includes(query) || textB.includes(query);
+        });
 
   const getOperationColor = (operation: string) => {
     switch (operation) {
@@ -119,13 +135,40 @@ const DiffList = ({ onDiffClick }: DiffListProps) => {
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ p: 2, bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6">Differences ({diffData.total_differences})</Typography>
-        <Typography variant="caption" color="text.secondary">
-          Click to navigate
-        </Typography>
+        <Typography variant="h6" sx={{ mb: 1 }}>Differences ({diffData.total_differences})</Typography>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search differences..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+            endAdornment: searchQuery && (
+              <InputAdornment position="end">
+                <IconButton
+                  size="small"
+                  onClick={() => setSearchQuery('')}
+                  edge="end"
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        {searchQuery && (
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+            {filteredDiffs.length} of {diffData.total_differences} shown
+          </Typography>
+        )}
       </Box>
       <List sx={{ flex: 1, overflow: 'auto', p: 0 }}>
-        {diffData.diff_items.map((item, index) => {
+        {filteredDiffs.map(({ item, index }) => {
           const isActive = activeDiffIndex === index;
           const isPinnedItem = isActive && isPinned;
           const prevItem = index > 0 ? diffData.diff_items[index - 1] : null;

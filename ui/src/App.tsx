@@ -102,14 +102,12 @@ function App() {
     setIsScrolling(true);
     setActiveDiffIndex(diffIndex);
     
-    // Scroll to page
-    pdfCompareRef.current?.scrollToPage(pageA, pageB);
-    
-    // After scroll completes, show pinned popover
-    setTimeout(() => {
+    // Scroll to page with completion callback
+    pdfCompareRef.current?.scrollToPage(pageA, pageB, () => {
+      // After scroll completes, show pinned popover
       setIsScrolling(false);
       setIsPinned(true);
-    }, 700);
+    });
   };
 
   return (
@@ -130,20 +128,17 @@ function App() {
             src="/icon.svg"
             alt="Logo"
             sx={{ 
-              height: 40, 
-              width: 40,
+              height: 30, 
+              width: 30,
               filter: 'brightness(0) invert(1)' // Makes icon white
             }}
           />
           <Box>
-            <Typography variant="h5" fontWeight="bold">PDF Comparison Tool</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.9 }}>
-              {diffData.total_differences} differences found
-            </Typography>
+            <Typography variant="h6" fontWeight="bold">PDF Comparison Tool</Typography>
           </Box>
         </Box>
         <Box sx={{ flex: 1, overflow: 'hidden', width: '100%', display: 'flex' }}>
-          <Box sx={{ flex: 1, overflow: 'hidden' }}>
+          <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
             <PDFCompareView ref={pdfCompareRef} />
           </Box>
           <Box sx={{ width: 400, borderLeft: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>

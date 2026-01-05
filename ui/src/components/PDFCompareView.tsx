@@ -10,7 +10,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export interface PDFCompareViewHandle {
-  scrollToPage: (pageA: number, pageB: number) => void;
+  scrollToPage: (pageA: number, pageB: number, onComplete?: () => void) => void;
 }
 
 const PDFCompareView = forwardRef<PDFCompareViewHandle>((props, ref) => {
@@ -23,14 +23,29 @@ const PDFCompareView = forwardRef<PDFCompareViewHandle>((props, ref) => {
   const pageRefsB = useRef<Map<number, HTMLDivElement>>(new Map());
 
   useImperativeHandle(ref, () => ({
-    scrollToPage: (pageA: number, pageB: number) => {
+    scrollToPage: (pageA: number, pageB: number, onComplete?: () => void) => {
       const pageElementA = pageRefsA.current.get(pageA);
       
       if (pageElementA && scrollContainerRef.current) {
+        const targetTop = pageElementA.offsetTop - 20;
+        const startTop = scrollContainerRef.current.scrollTop;
+        const distance = Math.abs(targetTop - startTop);
+        
+        // Estimate scroll duration based on distance (smooth scroll is ~500ms for typical distances)
+        const duration = Math.min(500, Math.max(200, distance * 0.3));
+        
         scrollContainerRef.current.scrollTo({
-          top: pageElementA.offsetTop - 20,
+          top: targetTop,
           behavior: 'smooth'
         });
+        
+        // Call onComplete after scroll duration
+        if (onComplete) {
+          setTimeout(onComplete, duration + 100); // Add 100ms buffer
+        }
+      } else if (onComplete) {
+        // If no scroll needed, call immediately
+        onComplete();
       }
     }
   }));
@@ -79,13 +94,13 @@ const PDFCompareView = forwardRef<PDFCompareViewHandle>((props, ref) => {
           overflow: 'auto'
         }}
       >
-        <Box sx={{ display: 'flex', minHeight: '100%' }}>
-          <Box sx={{ width: '50%', position: 'relative' }}>
-            <Document
-              file={pdfAPath}
-              onLoadSuccess={handleLoadSuccessA}
-              error={<Paper sx={{ p: 2, m: 2 }}><Typography color="error">Failed to load PDF A</Typography></Paper>}
-            >
+        <Box sx={{ display: 'flex', minHeight: '100%', minWidth: 1200 }}>
+        <Box sx={{ width: '50%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'grey.100' }}>
+          <Document
+            file={pdfAPath}
+            onLoadSuccess={handleLoadSuccessA}
+            error={<Paper sx={{ p: 2, m: 2 }}><Typography color="error">Failed to load PDF A</Typography></Paper>}
+          >
               {Array.from(new Array(numPagesA), (_, index) => (
                 <Box 
                   key={`page_a_${index + 1}`} 
@@ -101,13 +116,13 @@ const PDFCompareView = forwardRef<PDFCompareViewHandle>((props, ref) => {
                     boxShadow: index < numPagesA - 1 ? '0 4px 6px rgba(0,0,0,0.1)' : 'none'
                   }}
                 >
-                  <Page
-                    pageNumber={index + 1}
-                    width={600}
-                    onLoadSuccess={handlePageLoadSuccess}
-                    renderTextLayer={false}
-                    renderAnnotationLayer={false}
-                  />
+                <Page
+                  pageNumber={index + 1}
+                  width={600}
+                  onLoadSuccess={handlePageLoadSuccess}
+                  renderTextLayer={true}
+                  renderAnnotationLayer={false}
+                />
                   <DiffOverlay
                     pageNumber={index + 1}
                     side="a"
@@ -124,7 +139,7 @@ const PDFCompareView = forwardRef<PDFCompareViewHandle>((props, ref) => {
             borderLeft: 1,
             borderColor: 'divider'
           }} />
-          <Box sx={{ width: '50%', position: 'relative' }}>
+        <Box sx={{ width: '50%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'grey.100' }}>
           <Document
             file={pdfBPath}
             onLoadSuccess={handleLoadSuccessB}
@@ -148,7 +163,7 @@ const PDFCompareView = forwardRef<PDFCompareViewHandle>((props, ref) => {
                 <Page
                   pageNumber={index + 1}
                   width={600}
-                  renderTextLayer={false}
+                  renderTextLayer={true}
                   renderAnnotationLayer={false}
                 />
                 <DiffOverlay
