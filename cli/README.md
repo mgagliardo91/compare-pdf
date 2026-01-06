@@ -1,76 +1,18 @@
-# PDF OCR Diff
+# PDF OCR Diff CLI
 
-A comprehensive toolkit for comparing PDF documents using OCR and spatial diff analysis. The project includes a CLI tool, REST API, and web-based UI.
+A command-line tool that compares two PDFs page-by-page using OCR, extracts text with spatial location data (bounding boxes), and generates structured JSON output mapping differences back to page coordinates.
 
-## Project Structure
+## Features
 
-```
-compare-pdf/
-├── core/         # Shared diff logic library
-├── cli/          # Command-line interface (Phase 1)
-├── api/          # REST API service (Phase 3)
-├── ui/           # React web interface (Phase 2)
-└── example/      # Sample PDFs and diff outputs
-```
-
-## Components
-
-### Core - Shared Library
-Core OCR and diff logic used by both CLI and API.
-
-**Quick Start:**
-```bash
-cd core
-pip install -e .
-```
-
-See `core/README.md` for full documentation.
-
-### CLI - Command-Line Tool
-Python-based CLI for comparing PDFs via terminal. Depends on `core`.
-
-**Quick Start:**
-```bash
-cd core && pip install -e .  # Install core first
-cd ../cli
-pip install -e .
-pdf-ocr-diff document1.pdf document2.pdf --output diff.json
-```
-
-See `cli/README.md` for full documentation.
-
-### API - REST Service
-Production-ready FastAPI service for PDF comparison. Depends on `core`.
-
-**Quick Start:**
-```bash
-cd core && pip install -e .  # Install core first
-cd ../api
-pip install -e .
-python server.py
-```
-
-Visit http://localhost:8000/docs for interactive API documentation.
-
-See `api/README.md` for full documentation.
-
-### UI - Web Interface
-React-based web UI for visual side-by-side comparison.
-
-**Quick Start:**
-```bash
-cd ui
-npm install
-npm run dev
-```
-
-Visit http://localhost:5173 for the web interface.
-
-See `ui/README.md` for full documentation.
+- **Page-by-page comparison**: Compares PDFs at the page level rather than flattening documents
+- **Spatial awareness**: Tracks bounding box coordinates for all text differences
+- **OCR-based**: Uses Tesseract OCR to extract text from PDF images
+- **Structured output**: Generates machine-readable JSON with difference details
+- **Handles unequal documents**: Properly compares PDFs with different page counts
 
 ## System Dependencies
 
-The CLI and API require these system-level dependencies:
+Before installing the Python package, you need these system-level dependencies:
 
 ### macOS
 ```bash
@@ -87,9 +29,64 @@ sudo apt-get install poppler-utils tesseract-ocr
 sudo yum install poppler-utils tesseract
 ```
 
-## Common Output Format
+## Installation
 
-All components (CLI, API, UI) use the same JSON diff format:
+**Important:** The CLI depends on the core library, so install core first.
+
+1. Install the core library:
+```bash
+cd core
+pip install -e .
+```
+
+2. Navigate to the cli directory:
+```bash
+cd ../cli
+```
+
+3. Create and activate a virtual environment (recommended, if not already active):
+```bash
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
+
+4. Install the CLI package:
+```bash
+pip install -e .
+```
+
+For development (includes pytest):
+```bash
+pip install -e ".[dev]"
+```
+
+## Usage
+
+### Basic Usage
+Compare two PDFs and output JSON to stdout:
+```bash
+pdf-ocr-diff document_v1.pdf document_v2.pdf
+```
+
+### Save Output to File
+```bash
+pdf-ocr-diff document_v1.pdf document_v2.pdf --output diff.json
+```
+
+### Adjust Image Resolution
+Higher DPI provides better OCR accuracy but slower processing:
+```bash
+pdf-ocr-diff document_v1.pdf document_v2.pdf --dpi 200
+```
+
+### Help
+```bash
+pdf-ocr-diff --help
+```
+
+## Output Format
+
+The tool outputs JSON with the following structure:
 
 ```json
 {
@@ -151,6 +148,17 @@ All components (CLI, API, UI) use the same JSON diff format:
   - **x, y**: Top-left corner coordinates (in pixels from PDF image)
   - **width, height**: Dimensions of the bounding box
 
+## Running Tests
+
+```bash
+pytest
+```
+
+For verbose output:
+```bash
+pytest -v
+```
+
 ## How It Works
 
 1. **PDF to Images**: Converts each PDF page to an image at specified DPI (default 300)
@@ -168,27 +176,23 @@ All components (CLI, API, UI) use the same JSON diff format:
 - **Text-only**: Currently extracts and compares text only; does not detect image differences
 - **Language**: Defaults to English OCR; other languages may require Tesseract language data
 
-## Development Status
+## Project Structure
 
-### Phase 1: CLI ✅
-Command-line interface with full OCR diff functionality.
-
-### Phase 2: UI (In Progress)
-
-Web-based interface for visual PDF comparison with interactive diff overlays.
-See `ui/README.md` for details.
-
-### Phase 3: API ✅
-Production-ready FastAPI REST service with full diff functionality.
-See `api/README.md` for details.
-
-## Future Enhancements
-
-- **Phase 4**: Integrate CLI diff logic into API
-- PDF markup export with annotations
-- Advanced document alignment heuristics
-- Multi-language OCR support
-- Performance optimizations for large documents
+```
+cli/
+├── pdf_ocr_diff/
+│   ├── __init__.py
+│   ├── models.py      # Data structures (BoundingBox, TextBlock, etc.)
+│   ├── ocr.py         # PDF processing and OCR extraction
+│   ├── differ.py      # Text comparison and spatial mapping
+│   └── cli.py         # Command-line interface
+├── tests/
+│   ├── test_models.py
+│   ├── test_ocr.py
+│   └── test_differ.py
+├── pyproject.toml
+└── README.md
+```
 
 ## License
 

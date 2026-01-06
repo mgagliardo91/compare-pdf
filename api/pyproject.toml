@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdf-ocr-diff-api"
+version = "0.1.0"
+description = "FastAPI service for PDF OCR diff comparison"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Michael"}
+]
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "python-multipart>=0.0.6",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "pdf-ocr-diff-core",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pdf_ocr_diff_api*"]

@@ -5,8 +5,8 @@ import json
 import sys
 from pathlib import Path
 
-from .ocr import process_pdf
-from .differ import compare_pdfs
+from pdf_ocr_diff.ocr import process_pdf
+from pdf_ocr_diff.differ import compare_pdfs
 
 
 def main():
